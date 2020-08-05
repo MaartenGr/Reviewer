@@ -180,6 +180,7 @@ def main():
     pixar_reviews = scrape_reviews(pixar_urls, args.path, save="pixar")
     disney_reviews = scrape_reviews(disney_urls, args.path, save="disney")
 
+
 if __name__ == "__main__":
     main()
 
