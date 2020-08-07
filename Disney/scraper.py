@@ -15,22 +15,23 @@ from bs4.element import Tag
 
 
 class Scraper:
-    def __init__(self, dir_path: str = ""):
+    def __init__(self, dir_path: str = "", chrome_path: str = "drivers/chromedriver.exe"):
         self.dir_path = dir_path
+        self.chrome_path = chrome_path
 
     def scrape(self):
         # Extract titles from wiki
-        # disney = self.get_all_disney_titles()
+        disney = self.get_all_disney_titles()
         pixar = self.get_all_pixar_titles()
-        pixar = pixar.iloc[:5]
+        # pixar = pixar.iloc[:5]
 
         # Extract IMDB movie urls
-        # disney_urls = self.scrape_imdb_urls(disney, save="disney")
+        disney_urls = self.scrape_imdb_urls(disney, save="disney")
         pixar_urls = self.scrape_imdb_urls(pixar, save="pixar")
 
         # Extract reviews
-        self.scrape_reviews(pixar_urls, self.dir_path, save="pixar")
-        # self.scrape_reviews(disney_urls, self.dir_path, save="disney")
+        self.scrape_reviews(pixar_urls, save="pixar")
+        self.scrape_reviews(disney_urls, save="disney")
 
     def get_all_disney_titles(self) -> pd.DataFrame:
         """ Get all Disney titles and their release dates """
@@ -93,7 +94,7 @@ class Scraper:
             urls["Onward"] = "https://www.imdb.com/title/tt7146812/reviews"
 
         if save:
-            with open(f'../data/{save}_urls.json', 'w') as f:
+            with open(f'{self.dir_path}data/{save}_urls.json', 'w') as f:
                 json.dump(urls, f)
 
         return urls
@@ -114,7 +115,7 @@ class Scraper:
 
         return names, reviews
 
-    def scrape_reviews(self, urls: dict, driver_path: str = None, save: str = None) -> dict:
+    def scrape_reviews(self, urls: dict, save: str = None) -> dict:
         """ Scrape all reviews from a single movie on IMDB and return a soup instance
 
         It needs to use Chrome driver as the "load more" button should be
@@ -140,7 +141,7 @@ class Scraper:
         for movie_title in tqdm(urls, "Scraping IMDB Reviews"):
 
             # Instantiate driver
-            driver = webdriver.Chrome(executable_path=driver_path)
+            driver = webdriver.Chrome(executable_path=self.chrome_path)
             wait = WebDriverWait(driver, 10)
 
             # Prepare page
@@ -167,40 +168,7 @@ class Scraper:
                                                                                                            reviews)]
 
         if save:
-            with open(f'../data/{save}_reviews.json', 'w') as f:
+            with open(f'{self.dir_path}data/{save}_reviews.json', 'w') as f:
                 json.dump(all_reviews, f)
 
         return all_reviews
-
-#
-# def parse_arguments():
-#     """ Parse command line inputs """
-#     parser = argparse.ArgumentParser(description='Scraper')
-#     parser.add_argument('--path', help='Chromedriver path', default="../drivers/chromedriver.exe")
-#     args = parser.parse_args()
-#     return args
-#
-#
-# def main():
-#     args = parse_arguments()
-#
-#     # Extract titles from wiki
-#     disney = get_all_disney_titles()
-#     pixar = get_all_pixar_titles()
-#
-#     # Extract IMDB movie urls
-#     disney_urls = scrape_imdb_urls(disney, save="disney")
-#     pixar_urls = scrape_imdb_urls(pixar, save="pixar")
-#
-#     # Extract reviews
-#     pixar_reviews = scrape_reviews(pixar_urls, args.path, save="pixar")
-#     disney_reviews = scrape_reviews(disney_urls, args.path, save="disney")
-
-#
-# if __name__ == "__main__":
-#     main()
-
-
-
-
-

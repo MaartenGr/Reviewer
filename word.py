@@ -1,6 +1,6 @@
 import os
 import argparse
-from Disney.wc import WordCloudGenerator
+from Disney.cloud import WordCloudGenerator
 
 
 def parse_arguments() -> argparse.Namespace:
