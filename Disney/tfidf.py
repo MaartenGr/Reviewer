@@ -105,5 +105,5 @@ def main():
         extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
