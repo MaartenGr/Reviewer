@@ -159,6 +159,7 @@ def scrape_reviews(urls: dict, driver_path: str = None, save: str = None) -> dic
 
 
 def parse_arguments():
+    """ Parse command line inputs """
     parser = argparse.ArgumentParser(description='Scraper')
     parser.add_argument('--path', help='Chromedriver path', default="../drivers/chromedriver.exe")
     args = parser.parse_args()

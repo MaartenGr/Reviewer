@@ -43,8 +43,11 @@ def c_tf_idf(documents, m, ngram_range=(1, 1)):
 def load_data() -> dict:
     """ Load, for now, only Pixar reviews """
     with open('../data/pixar_reviews.json') as f:
-        reviews = json.load(f)
-    return reviews
+        pixar_reviews = json.load(f)
+
+    with open('../data/disney_reviews.json') as f:
+        disney_reviews = json.load(f)
+    return pixar_reviews, disney_reviews
 
 
 def prepare_data(reviews: dict) -> (list, list, int):
@@ -61,7 +64,7 @@ def prepare_data(reviews: dict) -> (list, list, int):
     return titles, documents, m
 
 
-def extract_top_n_tfidf(tf_idf, count, titles, n: int = 200, save: bool = False):
+def extract_top_n_tfidf(tf_idf, count, titles, n: int = 200, save: str = False):
     """ Extract the top n words for each movie based on their tf-idf score """
     result = pd.DataFrame(tf_idf, index=count.get_feature_names(), columns=titles)
 
@@ -72,11 +75,11 @@ def extract_top_n_tfidf(tf_idf, count, titles, n: int = 200, save: bool = False)
         top_n_words[movie] = [(word, value) for word, value in zip(words, values)]
 
     if save:
-        with open(f'../data/pixar_tfidf.json', 'w') as f:
+        with open(f'../data/{save}_tfidf.json', 'w') as f:
             json.dump(top_n_words, f)
 
 
-def extract_top_n_relative_importance(tf_idf, count, titles, n: int = 200, save: bool = False):
+def extract_top_n_relative_importance(tf_idf, count, titles, n: int = 200, save: str = False):
     """ Extract the top n words for each movie based on their relative tf-idf score """
     result = pd.DataFrame(tf_idf, index=count.get_feature_names(), columns=titles)
 
@@ -88,16 +91,18 @@ def extract_top_n_relative_importance(tf_idf, count, titles, n: int = 200, save:
         top_n_words[movie] = [(word, value) for word, value in zip(words, values)]
 
     if save:
-        with open(f'../data/pixar_tfidf_relative.json', 'w') as f:
+        with open(f'../data/{save}_tfidf_relative.json', 'w') as f:
             json.dump(top_n_words, f)
 
 
 def main():
-    reviews = load_data()
-    titles, documents, m = prepare_data(reviews)
-    tf_idf, count = c_tf_idf(documents, m, ngram_range=(1, 3))
-    extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=True)
-    extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=True)
+    pixar_reviews, disney_reviews = load_data()
+
+    for reviews in [(pixar_reviews, "pixar"), (disney_reviews, "disney")]:
+        titles, documents, m = prepare_data(reviews[0])
+        tf_idf, count = c_tf_idf(documents, m, ngram_range=(1, 1))
+        extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=reviews[1])
+        extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
 
 
 if __name__ == "__main__":
