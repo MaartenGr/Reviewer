@@ -1,3 +1,12 @@
+"""
+Create Wordclouds
+
+Example:
+python scrape.py --chrome "drivers/chromedriver"
+
+"""
+
+
 import os
 import argparse
 from Disney.cloud import WordCloudGenerator

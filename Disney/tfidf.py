@@ -10,11 +10,22 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 class TFIDF:
     def __init__(self, dir_path: str = ""):
         self.dir_path = dir_path
+        
+    def generate(self, review_path: str, save_prefix: str):
+            
+        with open(review_path) as f:
+            movie_reviews = json.load(f)
+            
+        for reviews in [(movie_reviews, save_prefix)]:
+            titles, documents, m = self.prepare_data(reviews[0])
+            tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 1))
+            self.extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=reviews[1])
+            self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
 
-    def generate(self):
-        pixar_reviews, disney_reviews = self.load_data()
+    def generate_disney(self):
+        disney_reviews = self.load_disney_data()
 
-        for reviews in [(pixar_reviews, "pixar"), (disney_reviews, "disney")]:
+        for reviews in [(disney_reviews, "disney")]:
             titles, documents, m = self.prepare_data(reviews[0])
             tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 1))
             self.extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=reviews[1])
@@ -44,14 +55,11 @@ class TFIDF:
 
         return tf_idf, count
 
-    def load_data(self) -> (dict, dict):
+    def load_disney_data(self) -> (dict, dict):
         """ Load, for now, only Pixar reviews """
-        with open(f'{self.dir_path}data/pixar_reviews.json') as f:
-            pixar_reviews = json.load(f)
-
         with open(f'{self.dir_path}data/disney_reviews.json') as f:
             disney_reviews = json.load(f)
-        return pixar_reviews, disney_reviews
+        return disney_reviews
 
     def prepare_data(self, reviews: dict) -> (list, list, int):
         """ Extract titles, documents and total number of documents (m)

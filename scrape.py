@@ -1,3 +1,11 @@
+"""
+Basic scraping logic
+
+Example:
+python scrape.py --chrome "drivers/chromedriver"
+
+"""
+
 import argparse
 from Disney.scraper import Scraper
 from Disney.tfidf import TFIDF
@@ -15,10 +23,10 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     sc = Scraper(dir_path=args.path, chrome_path=args.chrome)
-    sc.scrape()
+    sc.scrape_disney()
 
     tf = TFIDF(dir_path=args.path)
-    tf.generate()
+    tf.generate_disney()
 
 
 if __name__ == "__main__":

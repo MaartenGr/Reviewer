@@ -61,30 +61,19 @@ class WordCloudGenerator:
         """
 
         if tfidf_type == "TF-IDF":
-            with open(f'{self.dir_path}data/pixar_tfidf.json') as f:
-                pixar = json.load(f)
-
             with open(f'{self.dir_path}data/disney_tfidf.json') as f:
                 disney = json.load(f)
         else:
-            with open(f'{self.dir_path}data/pixar_tfidf_relative.json') as f:
-                pixar = json.load(f)
-
             with open(f'{self.dir_path}data/disney_tfidf_relative.json') as f:
                 disney = json.load(f)
 
-        if pixar.get(movie):
-            with open(f'{self.dir_path}data/pixar_reviews.json') as f:
-                reviews = json.load(f)
-            return pixar[movie], reviews[movie]
-
-        elif disney.get(movie):
+        if disney.get(movie):
             with open(f'{self.dir_path}data/disney_reviews.json') as f:
                 reviews = json.load(f)
             return disney[movie], reviews[movie]
 
         else:
-            movies = list(disney.keys()) + list(pixar.keys())
+            movies = list(disney.keys())
             raise MovieNotFoundError(movie, movies)
 
     def preprocess_data(self, word_vals: dict, reviews: dict) -> (dict, str):

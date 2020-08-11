@@ -2,7 +2,6 @@ import re
 import time
 import json
 import requests
-import argparse
 import pandas as pd
 from tqdm import tqdm
 
@@ -17,28 +16,38 @@ from bs4.element import Tag
 class Scraper:
     def __init__(self, dir_path: str = "", chrome_path: str = "drivers/chromedriver.exe"):
         self.dir_path = dir_path
-        self.chrome_path = chrome_path
+        self.chrome_path = chrome_path       
 
-    def scrape(self):
+    def scrape_disney(self):
         # Extract titles from wiki
         disney = self.get_all_disney_titles()
-        pixar = self.get_all_pixar_titles()
-        # pixar = pixar.iloc[:5]
 
         # Extract IMDB movie urls
         disney_urls = self.scrape_imdb_urls(disney, save="disney")
-        pixar_urls = self.scrape_imdb_urls(pixar, save="pixar")
 
         # Extract reviews
-        self.scrape_reviews(pixar_urls, save="pixar")
         self.scrape_reviews(disney_urls, save="disney")
 
     def get_all_disney_titles(self) -> pd.DataFrame:
         """ Get all Disney titles and their release dates """
+        # Disney
         url = 'https://en.wikipedia.org/wiki/List_of_Walt_Disney_Animation_Studios_films'
-        df = pd.read_html(url, header=0)[1]
-        df['Year'] = df.apply(lambda row: row['Release date'].split(",")[-1].strip(), 1)
-        return df
+        disney = pd.read_html(url, header=0)[1]
+        disney['Year'] = disney.apply(lambda row: row['Release date'].split(",")[-1].strip(), 1)
+
+        # Pixar
+        url = "https://en.wikipedia.org/wiki/List_of_Pixar_films"
+        pixar = pd.read_html(url, header=0)[0]
+        pixar = pixar.loc[pixar.Film != "Released films", :]
+        pixar = pixar.iloc[:22]
+        pixar['Year'] = pixar.apply(lambda row: row['Release date'].split(",")[-1].strip(), 1)
+
+        # Merge
+        disney = disney.loc[:, ["Film", "Year"]]
+        pixar = pixar.loc[:, ["Film", "Year"]]
+        disney = disney.append(pixar)
+
+        return disney
 
     def get_all_pixar_titles(self) -> pd.DataFrame:
         """ Get all Pixar titles and their release dates """
@@ -131,8 +140,8 @@ class Scraper:
 
         Returns:
         --------
-        soup : BeautifulSoup
-            A BeautifulSoup instance of the entire page
+        all_reviews : dict
+            All reviews for each title
 
         """
 
