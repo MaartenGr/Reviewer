@@ -9,16 +9,16 @@ class TFIDF:
     def __init__(self, dir_path: str = ""):
         self.dir_path = dir_path
         
-    def generate(self, review_path: str, save_prefix: str, class_tfidf: bool = False):
+    def generate(self, review_path: str, save_prefix: str, class_tfidf: bool = False, max_ngram: int = 1):
             
         with open(review_path) as f:
             movie_reviews = json.load(f)
 
         if class_tfidf:
             titles, documents, m = self.prepare_data(movie_reviews)
-            tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 1))
+            tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, max_ngram))
             self.extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=save_prefix)
-            self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=save_prefix)
+#             self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=save_prefix)
         else:
             title = list(movie_reviews.keys())[0]
             count = self.get_top_n_words(movie_reviews[title], n=2000)
@@ -31,9 +31,9 @@ class TFIDF:
 
         for reviews in [(disney_reviews, "disney")]:
             titles, documents, m = self.prepare_data(reviews[0])
-            tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 1))
+            tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 3))
             self.extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=reviews[1])
-            self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
+#             self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
 
     @staticmethod
     def c_tf_idf(documents, m, ngram_range=(1, 1)):
@@ -49,7 +49,7 @@ class TFIDF:
 
         """
 
-        count = CountVectorizer(ngram_range=ngram_range).fit(documents)
+        count = CountVectorizer(ngram_range=ngram_range, stop_words="english").fit(documents)
         t = count.transform(documents)
         t = np.array(t.todense()).T
         w = t.sum(axis=0)

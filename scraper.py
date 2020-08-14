@@ -4,9 +4,9 @@ Basic scraping logic
 Examples:
 
 * To scrape a single movie:
-    python scraper.py --prefix car --url https://www.imdb.com/title/tt1216475/reviews?ref_=tt_ov_rt
+    python scraper.py --prefix car --url https://www.imdb.com/title/tt1216475/reviews?ref_=tt_ov_rt --ngram 3
 * To scrape all disney movies:
-    python scraper.py --disney
+    python scraper.py --disney --ngram 3
 
 """
 import json
@@ -23,6 +23,7 @@ def parse_arguments():
     parser.add_argument('--urls_path', help='Url path', default=False)
     parser.add_argument('--url', help='Url', default=False)
     parser.add_argument('--disney', dest='disney', action='store_true', help="Choose all disney movies")
+    parser.add_argument('--ngram', help='Max ngram', default=2)
 
     args = parser.parse_args()
     return args
@@ -50,7 +51,7 @@ def main():
     if args.disney:
         tf.generate_disney()
     else:
-        tf.generate(review_path=f"{sc.dir_path}data/{args.prefix}reviews.json", save_prefix=args.prefix)
+        tf.generate(review_path=f"{sc.dir_path}data/{args.prefix}reviews.json", save_prefix=args.prefix, max_ngram=args.ngram)
 
 
 if __name__ == "__main__":

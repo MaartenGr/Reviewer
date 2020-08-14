@@ -38,3 +38,22 @@ Vestibulum porttitor, arcu ut ultricies suscipit, tellus nisi dapibus orci, ut
     sem rhoncus malesuada ut at tellus. In hac habitasse platea dictumst.
      Mauris sed tempus sapien, rhoncus laoreet urna. Vestibulum vehicula consectetur dolor,
       vitae facilisis nulla condimentum eu.
+      
+      
+      
+# Sources
+Opinion dataset:
+- http://kavita-ganesan.com/opinosis/#.Wmljc6iWYow
+- https://github.com/8horn/opinion-or-fact-sentence-classifier
+
+# Masks
+* Aladdin - https://www.amazon.com/Aladdin-Official-Lifesize-Cardboard-Fan/dp/B07QSZ5GC9
+* Coco - https://www.jing.fm/iclipt/mJTmmi/
+* Avengers - https://besthqwallpapers.com/films/ironman-4k-superheroes-iron-man-white-background-38148
+* Up - https://www.hiclipart.com/free-transparent-background-png-clipart-semci
+* Toy Story 3 - https://pixar.fandom.com/wiki/Lots-o%27-Huggin%27_Bear
+* Frozen - https://tvtropes.org/pmwiki/pmwiki.php/Characters/FrozenElsa
+* Moana - https://brooklynactivemama.com/11/2016/obsessed-disneys-moana-free-moana-movie-printables.html
+* Tangled - https://www.pngfuel.com/free-png/nfjxg
+* Toy Story (Woody) - http://www.allocine.fr/evenements/pixar/chapitre2/
+* Toy Story (Buzz) - https://heroes-and-villians.fandom.com/wiki/Buzz_Lightyear
