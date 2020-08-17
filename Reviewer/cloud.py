@@ -44,7 +44,10 @@ class WordCloudGenerator:
                 word_vals = json.load(f)
 
                 if movie:
-                    word_vals = word_vals[movie]
+                    try:
+                        word_vals = word_vals[movie]
+                    except:
+                        print(word_vals.keys())
                 else:
                     word_vals = word_vals[list(word_vals.keys())[0]]
         else:
