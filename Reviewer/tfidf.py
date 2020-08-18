@@ -2,13 +2,13 @@
 import json
 import numpy as np
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 class TFIDF:
     def __init__(self, dir_path: str = ""):
         self.dir_path = dir_path
-        
+
     def generate(self, review_path: str, save_prefix: str, class_tfidf: bool = False, max_ngram: int = 1):
             
         with open(review_path) as f:
