@@ -1,4 +1,3 @@
-# Data handling
 import json
 import numpy as np
 import pandas as pd
@@ -6,18 +5,48 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 
 class TFIDF:
+    """
+    Generate a class-based TF-IDF score for each movie. In other words,
+    it will generate the most important words for a single movie compared
+    to all other movies.
+
+    C-TF-IDF can best be explained as a TF-IDF formula adopted for multiple classes
+    by joining all documents per class. Thus, each class is converted to a single document
+    instead of set of documents. Then, the frequency of words **t** are extracted for
+    each class **i** and divided by the total number of words **w**.
+
+    Next, the total, unjoined, number of documents across all classes **m** is divided by the total
+    sum of word **i** across all classes.
+    """
     def __init__(self, dir_path: str = ""):
         self.dir_path = dir_path
 
     def generate(self, review_path: str, save_prefix: str, class_tfidf: bool = False, max_ngram: int = 1):
+        """ Generate count or tf-idf data based on movie reviews and save them to a json file
+
+        Parameters:
+        -----------
+        review_path : str
+            Location of the json reviews file
+
+        save_prefix : str
+            The prefix of the file to be saved
+
+        class_tfidf : bool, default = False
+            Whether to use a class-based TF-IDF count or a simple top-n words measure
+
+        max_ngram : int, default = 1
+            The highest number of ngrams to be used.
+            Minimum is always 1.
+        """
             
         with open(review_path) as f:
             movie_reviews = json.load(f)
 
         if class_tfidf:
             titles, documents, m = self.prepare_data(movie_reviews)
-            tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, max_ngram))
-            self.extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=save_prefix)
+            c_tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, max_ngram))
+            self.extract_top_n_tfidf(c_tf_idf, count, titles, n=2000, save=save_prefix)
 #             self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=save_prefix)
         else:
             title = list(movie_reviews.keys())[0]
@@ -27,12 +56,13 @@ class TFIDF:
                 json.dump(count, f)
 
     def generate_disney(self):
+        """ Load and generate c_tf_idf data for disney and pixar movies"""
         disney_reviews = self.load_disney_data()
 
         for reviews in [(disney_reviews, "disney")]:
             titles, documents, m = self.prepare_data(reviews[0])
-            tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 3))
-            self.extract_top_n_tfidf(tf_idf, count, titles, n=2000, save=reviews[1])
+            c_tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 3))
+            self.extract_top_n_tfidf(c_tf_idf, count, titles, n=2000, save=reviews[1])
 #             self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
 
     @staticmethod
@@ -61,7 +91,7 @@ class TFIDF:
         return tf_idf, count
 
     @staticmethod
-    def get_top_n_words(corpus, n=2000):
+    def get_top_n_words(corpus, n: int = 2000) -> list:
         """ List the top n words in a vocabulary according to occurrence in a text corpus """
         vec = CountVectorizer(stop_words="english").fit(corpus)
         bag_of_words = vec.transform(corpus)

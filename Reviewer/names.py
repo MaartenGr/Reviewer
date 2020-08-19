@@ -84,7 +84,7 @@ class Character:
 
         return results
 
-    def load_reviews(self, path):
+    def load_reviews(self, path: str):
         """ Load reviews and the corresponding titles
 
         Parameters

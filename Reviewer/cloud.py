@@ -1,3 +1,4 @@
+import re
 import os
 import json
 import math
@@ -5,9 +6,8 @@ import numpy as np
 from PIL import Image
 import colorsys
 
-from wordcloud import WordCloud
+from wordcloud import WordCloud, ImageColorGenerator
 from Reviewer.utils import MovieNotFoundError
-from PIL import ImageFont
 
 
 class WordCloudGenerator:
@@ -113,7 +113,7 @@ class WordCloudGenerator:
         wc = WordCloud(background_color="white", mode="RGB", max_words=2000, mask=mask, min_font_size=1,
                        color_func=lambda *args, **kwargs: "black", font_path=f"{self.dir_path}data/fonts/staatliches.ttf")
         wc.generate_from_frequencies(freq)
-        wc.recolor(color_func=ImageColorGenerator(mask))
+        wc.recolor(color_func=BrightImageColorGenerator(mask))
         image = wc.to_image()
         return image
 
@@ -154,101 +154,17 @@ class WordCloudGenerator:
             image.save(f"{self.dir_path}images/results/result.png")
         else:
             image.save(f"{self.dir_path}images/results/result_{highest_saved_image+1}.png")
-            
-            
 
 
-class ImageColorGenerator(object):
-    """Color generator based on a color image.
-
-    Generates colors based on an RGB image. A word will be colored using
-    the mean color of the enclosing rectangle in the color image.
-
-    After construction, the object acts as a callable that can be passed as
-    color_func to the word cloud constructor or to the recolor method.
-
-    Parameters
-    ----------
-    image : nd-array, shape (height, width, 3)
-        Image to use to generate word colors. Alpha channels are ignored.
-        This should be the same size as the canvas. for the wordcloud.
-    default_color : tuple or None, default=None
-        Fallback colour to use if the canvas is larger than the image,
-        in the format (r, g, b). If None, raise ValueError instead.
+class BrightImageColorGenerator(ImageColorGenerator):
     """
-    # returns the average color of the image in that region
-    def __init__(self, image, default_color=None):
-        if image.ndim not in [2, 3]:
-            raise ValueError("ImageColorGenerator needs an image with ndim 2 or"
-                             " 3, got %d" % image.ndim)
-        if image.ndim == 3 and image.shape[2] not in [3, 4]:
-            raise ValueError("A color image needs to have 3 or 4 channels, got %d"
-                             % image.shape[2])
-        self.image = image
-        self.default_color = default_color
+    Brighten the colors of the ImageColorGenerator since they come
+    out rather bleak...
 
-
+    """
     def __call__(self, word, font_size, font_path, position, orientation, **kwargs):
-        """Generate a color for a given word using a fixed image."""
-        # get the font to get the box size
-        font = ImageFont.truetype(font_path, font_size)
-        transposed_font = ImageFont.TransposedFont(font,
-                                                   orientation=orientation)
-        
-        # get size of resulting text
-        box_size = transposed_font.getsize(word)
-        x = position[0]
-        y = position[1]
-        
-        # cut out patch under word box
-        patch = self.image[x:x + box_size[0], y:y + box_size[1]]
-        if patch.ndim == 3:
-            # drop alpha channel if any
-            patch = patch[:, :, :3]
-        if patch.ndim == 2:
-            raise NotImplementedError("Gray-scale images TODO")
-            
-        # check if the text is within the bounds of the image
-        reshape = patch.reshape(-1, 3)
-        if not np.all(reshape.shape):
-            if self.default_color is None:
-                raise ValueError('ImageColorGenerator is smaller than the canvas')
-            return "rgb(%d, %d, %d)" % tuple(self.default_color)
-        color = np.mean(reshape, axis=0)
-        h, l, s = colorsys.rgb_to_hls(*color/255)
-        color = colorsys.hls_to_rgb(h=h,l=min(1, l*.9),s=min(1, s*1.2))
-        
-        return "rgb(%d, %d, %d)" % (color[0]*255, color[1]*255, color[2]*255)
-#         return "rgb(%d, %d, %d)" % tuple(color)
-#
-# def parse_arguments() -> argparse.Namespace:
-#     """ Parse command line inputs """
-#     masks = tuple(os.listdir("masks"))
-#
-#     parser = argparse.ArgumentParser(description='Scraper')
-#     parser.add_argument('--movie', help='Movie', default="Frozen")
-#     parser.add_argument('--type', help='Type of top words', choices=("tfidf", "relative"), default="TFIDF")
-#     parser.add_argument('--mask', help='Mask url', choices=masks, default="coco.jpg")
-#     parser.add_argument('--pixels', help='Minimum number of pixels', default=500, type=int)
-#     args = parser.parse_args()
-#
-#     if args.type == "tfidf":
-#         args.type = "TF-IDF"
-#     else:
-#         args.type = "TF-IDF-Relative"
-#     return args
-#
-#
-# def main():
-#     args = parse_arguments()
-#     word_vals, reviews = load_data(args.type, args.movie)
-#     freq, text = preprocess_data(word_vals, reviews)
-#     mask = load_mask(args.mask, args.pixels)
-#     image = generate_word_cloud(freq, mask)
-#     save_image(image)
-
-
-# if __name__ == "__main__":
-#     main()
-
-
+        color = super().__call__(word, font_size, font_path, position, orientation, **kwargs)
+        color = tuple([int(re.sub("[^0-9]", "", x)) / 255 for x in color.split()])
+        h, l, s = colorsys.rgb_to_hls(*color)
+        color = colorsys.hls_to_rgb(h=h, l=min(1, l * .9), s=min(1, s * 1.2))
+        return "rgb(%d, %d, %d)" % (color[0] * 255, color[1] * 255, color[2] * 255)

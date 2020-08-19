@@ -74,7 +74,8 @@ class Scraper:
         with open(f"{self.dir_path}data/{self.prefix}reviews.json", "w") as f:
             json.dump(new_docs, f)
 
-    def get_all_disney_titles(self) -> pd.DataFrame:
+    @staticmethod
+    def get_all_disney_titles() -> pd.DataFrame:
         """ Get all Disney titles and their release dates """
         # Disney
         url = 'https://en.wikipedia.org/wiki/List_of_Walt_Disney_Animation_Studios_films'
@@ -130,7 +131,8 @@ class Scraper:
 
         return urls
 
-    def match_years(self, search_result: Tag, year: str) -> bool:
+    @staticmethod
+    def match_years(search_result: Tag, year: str) -> bool:
         """ Check if the year of a movie search matches (within 2 years) the year of the search result"""
         string = search_result.text
         year = int(year[-4:])
