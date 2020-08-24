@@ -1,17 +1,9 @@
-# Disney Characters
+# Reviewer
 
-> Code and instructions for scraping IMDB Disney reviews and 
->applying NER and Sentiment Analyses to extract Character popularity
+> Code for scraping IMDB reviews and applying NER and Sentiment Analyses to extract Character popularity
 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-Vestibulum porttitor, arcu ut ultricies suscipit, tellus nisi dapibus orci, ut
- luctus arcu quam eu arcu. Pellentesque imperdiet ante vel metus interdum, quis bibendum
-  massa molestie. Donec nec imperdiet erat, ac convallis arcu. Nulla porta a ipsum
-   et condimentum. Nam semper scelerisque orci. Duis id lacus at
-    sem rhoncus malesuada ut at tellus. In hac habitasse platea dictumst.
-     Mauris sed tempus sapien, rhoncus laoreet urna. Vestibulum vehicula consectetur dolor,
-      vitae facilisis nulla condimentum eu.
+
 
 
 ## Table of Contents
@@ -39,7 +31,8 @@ Vestibulum porttitor, arcu ut ultricies suscipit, tellus nisi dapibus orci, ut
      Mauris sed tempus sapien, rhoncus laoreet urna. Vestibulum vehicula consectetur dolor,
       vitae facilisis nulla condimentum eu.
       
-      
+![image](https://raw.githubusercontent.com/MaartenGr/Disney-NER/master/images/disney_frequency.png)
+
       
 # Sources
 Opinion dataset:
