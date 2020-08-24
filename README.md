@@ -1,6 +1,8 @@
 # Reviewer
 
-<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/results/result_0.png" height="300"/>
+<p align="center">
+<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/results/result_0.png" height="400"/>
+</p>
 
 > Code for scraping IMDB reviews and applying NER and Sentiment Analyses 
 >to extract Character popularity
@@ -24,16 +26,16 @@ using a combination of Named Entity Recognition and Sentiment Analyses.
 
 99. [Sources](#sources)
 
+<a name="instructions"/></a>
 ## 1. Instructions
 [Back to ToC](#toc)
-<a name="instructions"/></a>
 
 I would advise you to start with the **Overview.ipynb** notebook for a good 
 introduction before going to the command line. Moreover, scraping multiple movies
 is actually preferred as it allows you to use the class-based TF-IDF. 
 
-#### 1.a Scrape
 <a name="instructions-scrape"/></a>
+#### 1.a Scrape
 
 To scrape a single movie, simply run from the command line:
 ```commandline
@@ -43,8 +45,8 @@ python scraper.py --prefix lotr --url https://www.imdb.com/title/tt0120737/revie
 Make sure to select the url of the review page of the movie you want to scrape. 
 The `prefix` variable is the name used for saving the resulting .json file.  
 
-#### 1.b Word Cloud
 <a name="instructions-wordcloud"/></a>
+#### 1.b Word Cloud
 
 Make sure that you save an image that you want to be used as a mask. 
 It is important the background is white and the file saved as a .jpg
@@ -59,10 +61,12 @@ thus depends on the prefix at the scrape stage.
 
 The result is something like this:
 
-<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/results/result_2.png" height="200"/>
+<p align="center">
+<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/results/result_2.png" height="400"/>
+</p>
 
-#### 1.c c-TF-IDF
 <a name="instructions-ctfidf"/></a>
+#### 1.c c-TF-IDF
 
 The following formula can best be explained as a TF-IDF formula adopted for 
 multiple classes by joining all documents per class. Thus, each class is converted 
@@ -70,14 +74,15 @@ to a single document instead of set of documents. Then, the frequency of words *
 are extracted for each class **i** and divided by the total number of words **w**. 
 
 Next, the total, unjoined, number of documents across all classes **m** is divided by 
-the total sum of word **i** across all classes. 
+the total sum of word **i** across all classes.
+ 
+<p align="center">
+<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/ctfidf.gif" height="50"/>
+</p>
 
-<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/ctfidf.gif" height="100"/>
-
-
+<a name="disney"/></a>
 ## 98. Disney
 [Back to ToC](#toc)
-<a name="disney"/></a>
 
 Initially, this project was meant for me to be used only for Disney and Pixar movies 
 (as I enjoy those very much), but eventually I generalized the code to be used for,
@@ -86,11 +91,13 @@ in principle, all movies.
 However, I also analyzed the most popular characters (by relative frequency in reviews)
 and created a visualization of it below:
 
-![image](https://github.com/MaartenGr/Reviewer/raw/master/images/disney_frequency.png)
-      
+<p align="center">
+<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/disney_frequency.png" height="400"/>
+</p>
+
+<a name="sources"/></a>      
 ## 99. Sources
 [Back to ToC](#toc)
-<a name="sources"/></a>
 
 An overview of all sources used in this package (mainly images for masks). 
 
@@ -125,7 +132,3 @@ An overview of all sources used in this package (mainly images for masks).
 * Ariel - https://princess.disney.com/ariel
 
 </details>
-
-Opinion dataset:
-- http://kavita-ganesan.com/opinosis/#.Wmljc6iWYow
-- https://github.com/8horn/opinion-or-fact-sentence-classifier
