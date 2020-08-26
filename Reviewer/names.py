@@ -1,3 +1,6 @@
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 import re
 import json
 import editdistance
@@ -58,18 +61,13 @@ class Character:
         self.names = None
         self.processed_names = None
 
-    def predict_single_movie(self, name: str, reviews: List[str]) -> List[Tuple[str, int, str]]:
+    def predict_single_movie(self, reviews: List[str]) -> List[Tuple[str, int, str]]:
         """ Create predictions for a single movie
-
 
         Parameters
         ----------
-        name : str
-            Name of the movie
-
         reviews : list of str
             A list of reviews
-
 
         Returns
         -------
@@ -91,8 +89,8 @@ class Character:
                 if token.tag == "PER":
                     results.append((token.text, sentence.get_labels()[0].score, sentence.get_labels()[0].value))
 
-        with open(f'{self.dir_path}{name}.json', 'w') as f:
-            json.dump(results, f)
+        # with open(f'{self.dir_path}{name}.json', 'w') as f:
+        #     json.dump(results, f)
 
         return results
 
@@ -119,8 +117,8 @@ class Character:
                 self.names = json.load(f)
 
     def predict(self, path: str, prefix: str) -> dict:
-        """ For each movie in path
-
+        """ For each movie in path, predict which words are persons and extract
+        the sentiment of the sentence in which the person appears.
 
         Parameters
         ----------
@@ -141,18 +139,18 @@ class Character:
         # Generate predictions
         results = {title: None for title in self.titles}
         for title, name in tqdm(self.titles):
-            results[title] = self.predict_single_movie(name, self.reviews[title])
+            results[title] = self.predict_single_movie(self.reviews[title])
 
         # Save results - make sure correct format is used
         self.names = {title: results[title] for title, _ in self.titles}
 
-        with open(f'{self.dir_path}{prefix}_names.json', 'w') as f:
+        with open(f'{self.dir_path}data/{prefix}_names.json', 'w') as f:
             json.dump(self.names, f)
 
         return self.names
 
     def preprocess_names_and_reviews(self, reviews_path: str = None, names_path: str = None):
-        """
+        """ Preprocess reviews and combine similar names
 
         Parameters
         ----------
@@ -165,13 +163,26 @@ class Character:
             names already loaded within this class.
         """
         self.load_reviews(reviews_path, names_path)
-        sentences_per_movie = {title: get_nr_sentences(self.reviews[title]) for title in self.reviews}
-        self.processed_names = {title: preprocess_names(self.names[title],
-                                                        sentences_per_movie[title],
-                                                        title) for
+        sentences_per_movie = {title: _get_nr_sentences(self.reviews[title]) for title in self.reviews}
+        self.processed_names = {title: _preprocess_names(self.names[title],
+                                                         sentences_per_movie[title],
+                                                         title) for
                                 title in self.names}
 
-    def visualize_names(self, name, people=False, save=None):
+    def visualize_names(self, name: str, people: bool = False, save: str = None):
+        """ Visualize the most frequent names and their respective averaged sentiment
+
+        Parameters
+        ----------
+        name : str
+            Name of the movie
+
+        people : bool, default = False
+            Whether to only use names with a first and last name
+
+        save : str, default None
+            The save prefix name
+        """
         if not self.processed_names:
             raise Exception("Please preprocess the names from the reviews first through: \n"
                             "character.preprocess_names_and_reviews('reviews.json', 'names.json')")
@@ -194,12 +205,12 @@ class Character:
         plt.ylabel("")
 
         if save:
-            plt.savefig(f"../images/{save}.png", dpi=300)
+            plt.savefig(f"{self.dir_path}images/characters/{save}_characters.png", dpi=300)
         else:
             plt.show()
 
 
-def get_nr_sentences(docs: List[str]) -> int:
+def _get_nr_sentences(docs: List[str]) -> int:
     """ Extract nr of sentences from a list of documents """
     total_nr_sentences = 0
     for doc in docs:
@@ -208,7 +219,7 @@ def get_nr_sentences(docs: List[str]) -> int:
     return total_nr_sentences
 
 
-def preprocess_names(names: List[List[Union[str, float, str]]], nr_sentences: int, title: str) -> pd.DataFrame:
+def _preprocess_names(names: List[List[Union[str, float, str]]], nr_sentences: int, title: str) -> pd.DataFrame:
     """ From a list of names and sentiment, extract the most popular characters
     and their respective average sentiment.
 
@@ -244,7 +255,7 @@ def preprocess_names(names: List[List[Union[str, float, str]]], nr_sentences: in
     df = df.loc[df.Word != "Disney", :]
     df = df.loc[df.Word.str.len() >= 3, :]
     df = df.loc[df.Prob > 0.9, :]
-    df = preprocess_titles(df)
+    df = _preprocess_titles(df)
 
     # Finishing up - Average all results and create a general overview of common persons
     df = df.groupby("Word").agg({"Sentiment": [np.mean, np.count_nonzero]})
@@ -259,7 +270,7 @@ def preprocess_names(names: List[List[Union[str, float, str]]], nr_sentences: in
     return df
 
 
-def preprocess_titles(df: pd.DataFrame) -> pd.DataFrame:
+def _preprocess_titles(df: pd.DataFrame) -> pd.DataFrame:
     """ Preprocess the titles such that they are mapped to each other
     if the edit distance is 2 or lower
 
@@ -294,11 +305,3 @@ def preprocess_titles(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[df.Word == key, "Word"] = value
 
     return df
-
-# char = Character()
-# results = char.predict("reviews.json", prefix="lotr")
-
-# # If already predicted:
-# char = Character(load_classifiers=False)
-# char.preprocess_names_and_reviews("data/disney_reviews.json", "data/disney_names.json")
-# char.visualize_names(name = "Moana", people=True, save=None)

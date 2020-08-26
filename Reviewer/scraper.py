@@ -53,7 +53,6 @@ class Scraper:
         else:
             self.prefix = "disney_"
             disney = self.get_all_disney_titles()
-            # disney = disney.iloc[:2]
             disney_urls = self.scrape_disney_imdb_urls(disney, save="disney")
             disney_urls = list(disney_urls.values())
         return disney_urls

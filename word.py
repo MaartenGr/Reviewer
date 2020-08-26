@@ -2,10 +2,10 @@
 Create Wordclouds
 
 Movie Example:
-    python scrape.py --path "data/some_movie_count.json" --mask some_mask.jpg --pixels 1200
+    python word.py --path some_movie_count.json --movie YourMovieName --mask some_mask.jpg --pixels 1200
 
 Disney Example:
-    python scrape.py --movie Coco --type tfidf --mask coco.jpg --pixels 1200
+    python word.py --movie Coco --type tfidf --mask coco.jpg --pixels 1200
 
 """
 
@@ -38,7 +38,7 @@ def main():
     args = parse_arguments()
     wc = WordCloudGenerator()
     wc.generate_image(movie=args.movie, word_type=args.type, mask=args.mask, pixels=args.pixels, save=True,
-                      path=args.path)
+                      path="data/"+args.path)
 
 
 if __name__ == "__main__":
