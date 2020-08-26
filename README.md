@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/results/result_0.png" height="400"/>
+<img src="https://github.com/MaartenGr/Reviewer/raw/master/images/wordclouds/result_0.png" height="400"/>
 </p>
 
 > Code for scraping IMDB reviews and applying NER and Sentiment Analyses 
