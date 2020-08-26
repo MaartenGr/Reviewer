@@ -40,14 +40,18 @@ class WordCloudGenerator:
 
         """
         if path:
-            with open(path, "r") as f:
+            with open(self.dir_path+path, "r") as f:
                 word_vals = json.load(f)
 
                 if movie:
-                    try:
+                    if movie in word_vals.keys():
                         word_vals = word_vals[movie]
-                    except:
-                        print(word_vals.keys())
+                    else:
+                        movies = list(word_vals.keys())
+                        movies = "\n ".join(movies)
+                        raise Exception("Please select one of the following movie names in either --movies "
+                                        f"or as the movie param: \n {movies}")
+
                 else:
                     word_vals = word_vals[list(word_vals.keys())[0]]
         else:
@@ -103,9 +107,9 @@ class WordCloudGenerator:
         values = [val[1] for val in word_vals]
         freq = {word.upper(): value for word, value in zip(words, values)}
         
-#         for _ in range(2):
-#             for key in result.keys():
-#                 result[key.upper()] = result.pop(key)
+        # for _ in range(2):
+        #    for key in result.keys():
+        #       result[key.upper()] = result.pop(key)
         return freq
 
     def generate_word_cloud(self, freq: dict, mask: np.ndarray = None) -> Image.Image:
@@ -139,7 +143,7 @@ class WordCloudGenerator:
         """
 
         # Find the image with the highest value in their name
-        saved_images = [image for image in os.listdir(f"{self.dir_path}images/results") if "result" in image]
+        saved_images = [image for image in os.listdir(f"{self.dir_path}images/wordclouds") if "result" in image]
         highest_saved_image = 0
         for saved_image in saved_images:
             number = ''.join(i for i in saved_image if i.isdigit())
@@ -151,9 +155,9 @@ class WordCloudGenerator:
 
         # Save image
         if highest_saved_image == 0:
-            image.save(f"{self.dir_path}images/results/result.png")
+            image.save(f"{self.dir_path}images/wordclouds/result.png")
         else:
-            image.save(f"{self.dir_path}images/results/result_{highest_saved_image+1}.png")
+            image.save(f"{self.dir_path}images/wordclouds/result_{highest_saved_image+1}.png")
 
 
 class BrightImageColorGenerator(ImageColorGenerator):

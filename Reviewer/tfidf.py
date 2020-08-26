@@ -40,14 +40,14 @@ class TFIDF:
             Minimum is always 1.
         """
             
-        with open(review_path) as f:
+        with open(self.dir_path+review_path) as f:
             movie_reviews = json.load(f)
 
         if class_tfidf:
             titles, documents, m = self.prepare_data(movie_reviews)
             c_tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, max_ngram))
             self.extract_top_n_tfidf(c_tf_idf, count, titles, n=2000, save=save_prefix)
-#             self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=save_prefix)
+            # self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=save_prefix)
         else:
             title = list(movie_reviews.keys())[0]
             count = self.get_top_n_words(movie_reviews[title], n=2000)
@@ -63,7 +63,7 @@ class TFIDF:
             titles, documents, m = self.prepare_data(reviews[0])
             c_tf_idf, count = self.c_tf_idf(documents, m, ngram_range=(1, 3))
             self.extract_top_n_tfidf(c_tf_idf, count, titles, n=2000, save=reviews[1])
-#             self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
+            # self.extract_top_n_relative_importance(tf_idf, count, titles, n=2000, save=reviews[1])
 
     @staticmethod
     def c_tf_idf(documents, m, ngram_range=(1, 1)):
@@ -76,7 +76,6 @@ class TFIDF:
         The documents is a list of two documents, where each document is a join of all 200 documents.
 
         m = total number of documents
-
         """
 
         count = CountVectorizer(ngram_range=ngram_range, stop_words="english").fit(documents)

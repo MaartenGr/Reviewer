@@ -51,7 +51,7 @@ def main():
     if args.disney:
         tf.generate_disney()
     else:
-        tf.generate(review_path=f"{sc.dir_path}data/{args.prefix}reviews.json", save_prefix=args.prefix, max_ngram=args.ngram)
+        tf.generate(review_path=f"{sc.dir_path}data/{args.prefix}_reviews.json", save_prefix=args.prefix, max_ngram=args.ngram)
 
 
 if __name__ == "__main__":
